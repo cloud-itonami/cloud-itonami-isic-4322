@@ -1,0 +1,11 @@
+{:itonami.blueprint/id "cloud-itonami-4322"
+ :itonami.blueprint/name "Community Plumbing and HVAC Installation"
+ :itonami.blueprint/isic-rev5 "4322"
+ :itonami.blueprint/domain :construction/plumbing-hvac-installation
+ :itonami.blueprint/license "AGPL-3.0-or-later"
+ :itonami.blueprint/social-impact [:worker-safety :water-safety :consumer-protection]
+ :itonami.blueprint/governor :plumbing-trade-governor
+ :itonami.blueprint/robotics true
+ :itonami.blueprint/required-technologies [:robotics :identity :forms :dmn :bpmn :audit-ledger :cae]
+ :itonami.blueprint/optional-technologies [:optimization]
+ :itonami.blueprint/status :public-oss}
