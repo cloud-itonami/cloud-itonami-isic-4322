@@ -57,8 +57,12 @@
 
 (defn verdict->disposition
   "Map a Plumbing Governor verdict to a base disposition before the
-  phase gate."
+  phase gate. `plumbing.governor/check` returns `:disposition` (one of
+  :hold/:escalate/:commit, :hold whenever `:violations` is non-empty)
+  plus a derived `:escalate?` -- read `:disposition` directly rather
+  than re-deriving hold-ness from a separate flag, so a governor HARD
+  hold can never be silently downgraded to commit/escalate here."
   [verdict]
-  (cond (:hard? verdict) :hold
+  (cond (= :hold (:disposition verdict)) :hold
         (:escalate? verdict) :escalate
         :else :commit))
