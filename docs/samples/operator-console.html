@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>plumbing.render-html -- Plumbing/HVAC Trade Governor operator console</title>
+<style>
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ok { color: #137a3f; }
+body { font-family: system-ui,-apple-system,sans-serif; margin: 0; color: #1a1a1a; background: #fafafa; }
+header.bar { display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: #fff; border-bottom: 1px solid #e5e5e5; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
+h2 { margin-top: 0; font-size: 15px; }
+.warn { color: #b25c00; background: #fff8e1; padding: 2px 6px; border-radius: 4px; }
+main { max-width: 1100px; margin: 24px auto; padding: 0 20px 48px; }
+header.bar h1 { font-size: 18px; margin: 0; font-weight: 600; }
+.muted { color: #888; font-size: 13px; }
+.critical { color: #fff; background: #b3261e; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+.card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+.err { color: #b3261e; background: #fbe9e7; padding: 2px 6px; border-radius: 4px; }
+th { font-weight: 600; color: #555; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+header.bar .badge { margin-left: auto; font-size: 12px; color: #666; }
+code { font-size: 12px; background: #f4f4f4; padding: 1px 4px; border-radius: 3px; }
+p.note { color: #666; font-size: 13px; margin: 6px 0 14px; }
+</style>
+</head>
+<body>
+<header class="bar"><h1>Plumbing/HVAC Trade Governor -- Operator Console</h1><span class="badge">ISIC 4322 &middot; phase 3 (supervised-auto) &middot; coordination-only, effect always :propose &middot; never certifies installation as code-compliant/safe</span></header>
+<main>
+<div class="card"><h2>Project directory (real seed data, plumbing.store/demo-data)</h2>
+<table><thead><tr><th>id</th><th>name</th><th>jurisdiction</th><th>system-type</th><th>status</th><th>licensed professional</th></tr></thead><tbody>
+<tr><td>proj-1</td><td>Cherry Blossom Apartments Water System</td><td>JPN</td><td>water</td><td>intake</td><td>Smith Plumbing LLC (CA-P-123456)</td></tr>
+<tr><td>proj-2</td><td>Downtown Tower HVAC Retrofit</td><td>USA</td><td>hvac-heating</td><td>intake</td><td>Jones HVAC Inc. (TX-H-789012)</td></tr>
+<tr><td>proj-3</td><td>Berlin District Heating Modernization</td><td>DEU</td><td>hvac-heating</td><td>intake</td><td>Müller Heizung GmbH (DE-HZ-456789)</td></tr>
+</tbody></table>
+</div>
+<div class="card"><h2>Scenario runs (this page's demo, each row = one real g/run* call)</h2>
+<p class="note">Every row below is the literal disposition/status/violations returned by driving <code>plumbing.operation/build</code>'s compiled StateGraph through <code>langgraph.graph/run*</code> -- no value here is invented after the fact.</p>
+<table><thead><tr><th>thread</th><th>op</th><th>subject</th><th>disposition</th><th>run status</th><th>violations</th><th>what this demonstrates</th></tr></thead><tbody>
+<tr><td><code>t1</code></td><td>log-progress-record</td><td><code>proj-1</code></td><td class="ok">commit</td><td>done</td><td></td><td>Happy path: milestone log auto-commits at phase 3</td></tr>
+<tr><td><code>t2</code></td><td>flag-safety-hazard</td><td><code>proj-2</code></td><td class="warn">escalate</td><td>interrupted</td><td></td><td>Always-escalate: safety hazard flag (initial exec, pauses for approval)</td></tr>
+<tr><td><code>t2</code></td><td>flag-safety-hazard</td><td><code>proj-2</code></td><td class="ok">commit</td><td>done</td><td></td><td>Always-escalate: safety hazard flag (human approves -&gt; commits)</td></tr>
+<tr><td><code>t3</code></td><td>request-inspection-review</td><td><code>proj-3</code></td><td class="warn">escalate</td><td>interrupted</td><td></td><td>Always-escalate: inspection review request (initial exec, pauses for approval)</td></tr>
+<tr><td><code>t3</code></td><td>request-inspection-review</td><td><code>proj-3</code></td><td class="ok">commit</td><td>done</td><td></td><td>Always-escalate: inspection review request (human approves -&gt; commits)</td></tr>
+<tr><td><code>t4</code></td><td>log-progress-record</td><td><code>proj-9</code></td><td class="critical">HARD hold</td><td>done</td><td>no-legal-basis, project-unregistered</td><td>HARD hold: :project-unregistered (unknown subject proj-9)</td></tr>
+<tr><td><code>t5</code></td><td>schedule-crew-dispatch</td><td><code>proj-1</code></td><td class="critical">HARD hold</td><td>done</td><td>no-legal-basis</td><td>HARD hold: :no-legal-basis (:schedule-crew-dispatch has no MockAdvisor case yet)</td></tr>
+<tr><td><code>t6</code></td><td>log-progress-record</td><td><code>proj-2</code></td><td class="critical">HARD hold</td><td>done</td><td>unresolved-hazard</td><td>HARD hold: :unresolved-hazard (proj-2's hazard from t2 is still unresolved)</td></tr>
+<tr><td><code>t7</code></td><td>flag-safety-hazard</td><td><code>proj-2</code></td><td class="critical">HARD hold</td><td>done</td><td>unresolved-hazard, already-flagged</td><td>HARD hold: :already-flagged + :unresolved-hazard together (repeat gas-leak flag on proj-2)</td></tr>
+</tbody></table>
+</div>
+<div class="card"><h2>Progress-record log (:log-progress-record commits)</h2>
+<table><thead><tr><th>record_id</th><th>kind</th><th>project_id</th><th>jurisdiction</th></tr></thead><tbody>
+<tr><td>JPN-PRG-000000</td><td>progress-record-draft</td><td>proj-1</td><td>JPN</td></tr>
+</tbody></table>
+</div>
+<div class="card"><h2>Crew-dispatch proposals (:schedule-crew-dispatch commits)</h2>
+<p class="note">Empty by design in this demo: <code>plumbing.plumbingadvisor</code>'s MockAdvisor has no case for <code>:schedule-crew-dispatch</code> yet, so every proposal falls to the "Unknown op" handler (empty <code>:cites</code>) and hard-holds on <code>:no-legal-basis</code> -- see the Scenario runs table, thread t5.</p>
+<table><thead><tr><th>record_id</th><th>kind</th><th>project_id</th><th>jurisdiction</th></tr></thead><tbody>
+</tbody></table>
+</div>
+<div class="card"><h2>Safety-hazard flags (:flag-safety-hazard commits)</h2>
+<p class="note">Always human-approved before commit -- unconditionally high-stakes, every phase. There is no "resolve" action in this coordination-only actor, so an unresolved hazard hard-holds every later op on that project until a licensed professional resolves it outside this system.</p>
+<table><thead><tr><th>record_id</th><th>project_id</th><th>hazard_type</th><th>description</th><th>escalated</th></tr></thead><tbody>
+<tr><td>USA-HAZ-000000</td><td>proj-2</td><td>gas-leak</td><td>Technician reported a gas odor near the retrofit tie-in point during HVAC-heating installation</td><td>yes</td></tr>
+</tbody></table>
+</div>
+<div class="card"><h2>Inspection review requests (:request-inspection-review commits)</h2>
+<p class="note">Always human-approved before commit -- only a licensed plumber/HVAC technician signs off on installation compliance.</p>
+<table><thead><tr><th>record_id</th><th>project_id</th><th>inspection_scope</th><th>requires human sign-off</th></tr></thead><tbody>
+<tr><td>DEU-INS-000000</td><td>proj-3</td><td>gas-tightness-test</td><td>yes</td></tr>
+</tbody></table>
+</div>
+<div class="card"><h2>Safety notices sent (real plumbing.notify, mock transport, no network)</h2>
+<p class="note">plumbing.operation's graph does not itself call plumbing.notify (confirmed: the <code>:notifier</code> build option is accepted but unused in every graph node) -- this send is issued directly against the mock transport at the point a human approved the escalation, the same real hazard data (project, hazard-type) the graph itself governed.</p>
+<table><thead><tr><th>channel</th><th>to</th><th>status</th><th>subject / message</th></tr></thead><tbody>
+<tr><td>mail</td><td>Jones HVAC Inc.</td><td class="ok">sent</td><td>Safety Alert: gas-leak detected</td></tr>
+</tbody></table>
+</div>
+<div class="card"><h2>Rollout phase gate (plumbing.phase/phases)</h2>
+<table><thead><tr><th>phase</th><th>label</th><th>writes allowed</th><th>auto-commit eligible</th></tr></thead><tbody>
+<tr><td>phase 0</td><td>read-only</td><td></td><td>(none -- always escalate/hold)</td></tr>
+<tr><td>phase 1</td><td>assisted-intake</td><td>log-progress-record</td><td>(none -- always escalate/hold)</td></tr>
+<tr><td>phase 2</td><td>assisted-verify</td><td>flag-safety-hazard, log-progress-record</td><td>(none -- always escalate/hold)</td></tr>
+<tr><td>phase 3</td><td>supervised-auto</td><td>flag-safety-hazard, log-progress-record, request-inspection-review, schedule-crew-dispatch</td><td>log-progress-record</td></tr>
+</tbody></table>
+</div>
+<div class="card"><h2>Permanent high-stakes ops (plumbing.governor/high-stakes)</h2>
+<p class="note">Deliberately absent from every phase's :auto set -- a structural fact, not a rollout milestone (plumbing.phase's safety-escalation invariant docstring).</p>
+<table><thead><tr><th>op</th><th>escalates</th><th>why</th></tr></thead><tbody>
+<tr><td>flag-safety-hazard</td><td>always</td><td>ALWAYS escalates to a licensed professional, every phase (plumbing.governor/high-stakes)</td></tr>
+<tr><td>request-inspection-review</td><td>always</td><td>ALWAYS escalates to a licensed professional, every phase (plumbing.governor/high-stakes)</td></tr>
+</tbody></table>
+</div>
+<div class="card"><h2>Audit ledger (plumbing.store/ledger, append-only)</h2>
+<p class="note">Committed facts carry <code>:subject</code> directly; this actor's HARD-hold ledger facts record <code>:op</code> + violation rules but not <code>:subject</code> -- cross-reference the thread id in the Scenario runs table above for which request a given hold corresponds to.</p>
+<table><thead><tr><th>op</th><th>subject</th><th>status</th><th>rules / basis</th><th>detail</th></tr></thead><tbody>
+<tr><td>log-progress-record</td><td>proj-1</td><td>committed</td><td>progress-log-standard</td><td>Cherry Blossom Apartments Water System: Rough-in water piping installed; pressure test scheduled</td></tr>
+<tr><td>flag-safety-hazard</td><td>proj-2</td><td>committed</td><td>International Plumbing Code (IPC, adopted by most jurisdictions) / International Mechanical Code (IMC) / EPA Safe Drinking Water Act (SDWA) § 1431-1445 (backflow prevention), https://www.icc.org/products-services/standards/i-codes/ipc, gas-leak</td><td>Downtown Tower HVAC Retrofit: SAFETY ALERT - gas-leak</td></tr>
+<tr><td>request-inspection-review</td><td>proj-3</td><td>committed</td><td>DIN EN 806 (Installation of drinking-water systems) / Verordnung über Gasanlagen (GAVO, transposing Boiler &amp; Pressure Equipment Directive 2014/68/EU) / Arbeitsschutzgesetz (ArbSchG, Framework Directive 89/391/EEC, worker safety during installation), https://www.dvgw.de/en/our-topics/drinking-water/technical-standards, Druckprobe für Trinkwasserleitungen (DIN EN 806-4, pressure-test record), Gas-Dichtheitsprüfung (gas-tightness test per GAVO), Rückflussverhinderer-Inspektion (backflow-prevention device, DIN EN 806-7)</td><td>Berlin District Heating Modernization: Request licensed professional inspection review</td></tr>
+<tr><td>log-progress-record</td><td>(see Scenario runs above for subject)</td><td>HARD hold</td><td>no-legal-basis, project-unregistered</td><td></td></tr>
+<tr><td>schedule-crew-dispatch</td><td>(see Scenario runs above for subject)</td><td>HARD hold</td><td>no-legal-basis</td><td></td></tr>
+<tr><td>log-progress-record</td><td>(see Scenario runs above for subject)</td><td>HARD hold</td><td>unresolved-hazard</td><td></td></tr>
+<tr><td>flag-safety-hazard</td><td>(see Scenario runs above for subject)</td><td>HARD hold</td><td>unresolved-hazard, already-flagged</td><td></td></tr>
+</tbody></table>
+</div>
+</main>
+</body></html>
