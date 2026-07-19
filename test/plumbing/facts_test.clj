@@ -24,5 +24,5 @@
 (deftest inspection-checklist-test
   (let [checklist (facts/inspection-checklist "JPN")]
     (is (seq checklist))
-    (is (some #(clojure.string/includes? % "pressure") %)))
+    (is (some #(clojure.string/includes? % "pressure") checklist)))
   (is (empty? (facts/inspection-checklist "ATL"))))

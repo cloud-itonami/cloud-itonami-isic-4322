@@ -61,7 +61,7 @@
     (throw (ex-info "crew-dispatch: crew_type required" {})))
   (let [dispatch-number (str (str/upper-case jurisdiction) "-DSP-" (zero-pad sequence 6))]
     {"record" {"record_id" dispatch-number "kind" "crew-dispatch-proposal-draft"
-               "project_id" project_id "jurisdiction" jurisdiction
+               "project_id" project-id "jurisdiction" jurisdiction
                "crew_type" crew-type "immutable" true}
      "dispatch_number" dispatch-number}))
 

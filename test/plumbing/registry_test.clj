@@ -7,14 +7,14 @@
     (is (contains? result "record"))
     (is (contains? result "record_number"))
     (is (= "JPN-PRG-000000" (get result "record_number")))
-    (is (= "prog-record-draft" (get-in result ["record" "kind"])))))
+    (is (= "progress-record-draft" (get-in result ["record" "kind"])))))
 
 (deftest register-progress-record-validation-test
-  (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+  (is (thrown? clojure.lang.ExceptionInfo
         (registry/register-progress-record "" "JPN" 0 "test")))
-  (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+  (is (thrown? clojure.lang.ExceptionInfo
         (registry/register-progress-record "proj-1" "" 0 "test")))
-  (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+  (is (thrown? clojure.lang.ExceptionInfo
         (registry/register-progress-record "proj-1" "JPN" -1 "test"))))
 
 (deftest register-crew-dispatch-test

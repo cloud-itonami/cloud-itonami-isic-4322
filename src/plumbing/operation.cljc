@@ -82,7 +82,7 @@
 
       ;; Decide: governor disposition, then the rollout-phase gate.
       (g/add-node :decide
-        (fn [{:keys [request verdict]}]
+        (fn [{:keys [request proposal verdict]}]
           (let [base (phase/verdict->disposition verdict)
                 {:keys [disposition reason]} (phase/gate phase/default-phase request base)]
             (case disposition
@@ -99,14 +99,24 @@
                         :confidence (:confidence verdict)}]}
 
               :commit
+              ;; BUGFIX (found while wiring the flagship demo, 2026-07-19): this used
+              ;; to call `(commit-record request {} {})` -- a hardcoded empty proposal
+              ;; instead of the REAL `proposal` computed by :advise -- so `:record`
+              ;; always carried `:effect nil :value {}`, and (combined with the :commit
+              ;; node bug fixed below) no real op's effect ever reached the store.
               {:disposition :commit
-               :record (commit-record request {} {})}))))
+               :record (commit-record request {} proposal)}))))
 
       ;; Approval handoff -- paused by interrupt-before; human resumes with :approval.
       (g/add-node :request-approval
-        (fn [{:keys [request approval verdict]}]
+        (fn [{:keys [request approval verdict proposal]}]
           (if (= :approved (:status approval))
+            ;; BUGFIX: this branch never set `:record`, so an escalate -> approve ->
+            ;; commit flow (every :flag-safety-hazard / :request-inspection-review,
+            ;; i.e. every high-stakes op) skipped the SSoT write entirely even after
+            ;; the :decide/:commit fixes -- mirror :decide's :commit branch here.
             {:disposition :commit
+             :record (commit-record request {} proposal)
              :audit [{:t :approval-granted :op (:op request)
                       :by (:by approval)}]}
             {:disposition :hold
@@ -114,7 +124,18 @@
 
       ;; Commit -- the ONLY node that writes the SSoT + audit ledger.
       (g/add-node :commit
-        (fn [{:keys [request proposal]}]
+        (fn [{:keys [request proposal record]}]
+          ;; BUGFIX: this node's own comment says it is "the ONLY node that writes
+          ;; the SSoT" but it never actually called `store/commit-record!` -- only
+          ;; the audit-ledger fact below was ever written, so `:projects`/`:progress`/
+          ;; `:dispatches`/`:hazards`/`:inspections` were never mutated by any real
+          ;; graph run (confirmed empirically: `store/hazard-history` stayed empty
+          ;; after a full exec!+approve! commit of a `:flag-safety-hazard`, which in
+          ;; turn silently defeated `governor/unresolved-hazard-violations` -- it had
+          ;; nothing to ever find). commit-record! before the ledger append, same
+          ;; order `plumbing.store/commit-record!`'s own callers use elsewhere.
+          (when record
+            (store/commit-record! store record))
           (let [f (commit-fact request {} proposal)]
             (store/append-ledger! store f)
             {:audit [f]})))
