@@ -1,25 +1,20 @@
 (ns plumbing.store
   "SSoT for the plumbing/HVAC trade-coordination actor, behind a
   `Store` protocol so the backend is a swap, not a rewrite -- the same
-  seam every prior `cloud-itonami-isic-*` actor in this fleet uses:
+  seam every prior `cloud-itonami-isic-*` actor in this fleet uses.
 
-    - `MemStore`     -- atom of EDN. The deterministic default for
-                        dev/tests/demo (no deps).
-    - `DatomicStore` -- backed by `langchain.db`, a Datomic-API-compatible
-                        EAV store (datalog q / pull / upsert). Pure `.cljc`,
-                        so it runs offline AND can be pointed at a real
-                        Datomic Local or a kotoba-server pod by swapping
-                        `langchain.db`'s `:db-api`.
+  Currently MemStore-only: an atom of EDN, the deterministic default
+  for dev/tests/demo (no deps). A DatomicStore (langchain.db-backed)
+  is out of scope for this build -- unlike sibling actors that pair a
+  real second backend with `kotoba-lang/langchain-store`'s codec, this
+  repo has no `defrecord DatomicStore` to migrate.
 
   This actor does NOT perform installation work and NEVER certifies
   installation as code-compliant/safe. It proposes coordination tasks
   (progress logging, crew dispatch, safety hazard escalation, inspection
   review requests) and routes all safety-critical decisions to licensed
   professionals. Audit trail is append-only on every backend."
-  (:require #?(:clj  [clojure.edn :as edn]
-               :cljs [cljs.reader :as edn])
-            [plumbing.registry :as registry]
-            [langchain.db :as d]))
+  (:require [plumbing.registry :as registry]))
 
 (defprotocol Store
   (project [s id])
@@ -168,23 +163,3 @@
                            :hazard-sequences {} :hazards []
                            :inspection-sequences {} :inspections []))))
 
-;; ----------------------------- DatomicStore (langchain.db) -----------------------------
-
-(def ^:private schema
-  "DataScript/Datomic-style schema: only constraint attrs are declared.
-  Map/compound values are stored as EDN strings so `langchain.db` doesn't
-  expand them into sub-entities -- the same convention every sibling
-  actor's store uses."
-  {:project/id                              {:db/unique :db.unique/identity}
-   :ledger/seq                              {:db/unique :db.unique/identity}
-   :progress/seq                            {:db/unique :db.unique/identity}
-   :dispatch/seq                            {:db/unique :db.unique/identity}
-   :hazard/seq                              {:db/unique :db.unique/identity}
-   :inspection/seq                          {:db/unique :db.unique/identity}
-   :progress-sequence/jurisdiction          {:db/unique :db.unique/identity}
-   :dispatch-sequence/jurisdiction          {:db/unique :db.unique/identity}
-   :hazard-sequence/jurisdiction            {:db/unique :db.unique/identity}
-   :inspection-sequence/jurisdiction        {:db/unique :db.unique/identity}})
-
-(defn- enc [v] (pr-str v))
-(defn- dec* [s] (when s (edn/read-string s)))
