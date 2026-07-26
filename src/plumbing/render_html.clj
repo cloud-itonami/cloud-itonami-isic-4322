@@ -58,7 +58,8 @@
 
   Usage: `clojure -M:dev:render-html [out-file]`
   (default `docs/samples/operator-console.html`)."
-  (:require [clojure.string :as str]
+  (:require [jp-go-dds.skin]
+            [clojure.string :as str]
             [plumbing.store :as store]
             [plumbing.operation :as op]
             [plumbing.governor :as governor]
@@ -297,7 +298,9 @@ p.note { color: #666; font-size: 13px; margin: 6px 0 14px; }")
     (str
      "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
      "<title>plumbing.render-html -- Plumbing/HVAC Trade Governor operator console</title>\n"
-     "<style>\n" css "\n</style>\n</head>\n<body>\n"
+     "<style>"
+   (jp-go-dds.skin/dds+skin)
+   "</style>\n</head>\n<body>\n"
      "<header class=\"bar\"><h1>Plumbing/HVAC Trade Governor -- Operator Console</h1>"
      "<span class=\"badge\">ISIC 4322 &middot; phase " phase/default-phase
      " (" (:label ph3) ") &middot; coordination-only, effect always :propose"
