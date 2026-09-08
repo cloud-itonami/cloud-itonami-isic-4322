@@ -1,5 +1,5 @@
 (ns plumbing.registry-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.lang.text] [clojure.test :refer [deftest is]]
             [plumbing.registry :as registry]))
 
 (deftest register-progress-record-test
@@ -37,8 +37,8 @@
   (let [project {:id "proj-1" :name "Test Plumbing" :jurisdiction "JPN"}
         alert (registry/render-hazard-alert project "gas-leak" "smell detected" "JPN-HAZ-000000")]
     (is (string? alert))
-    (is (clojure.string/includes? alert "URGENT"))
-    (is (clojure.string/includes? alert "gas-leak"))))
+    (is (kotoba.lang.text/includes? alert "URGENT"))
+    (is (kotoba.lang.text/includes? alert "gas-leak"))))
 
 (deftest append-test
   (let [history []

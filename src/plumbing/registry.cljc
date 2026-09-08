@@ -19,7 +19,7 @@
   call to any real licensing/permitting authority, no mail/phone send.
   It builds the RECORD an operator would keep (that is `plumbing.operation`'s
   `:effect` ops + `plumbing.notify`, always human-gated for safety concerns)."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [plumbing.facts :as facts]))
 
 (defn- zero-pad [n w]
@@ -39,7 +39,7 @@
     (throw (ex-info "progress-record: sequence must be >= 0" {})))
   (when-not (and milestone (not= milestone ""))
     (throw (ex-info "progress-record: milestone required" {})))
-  (let [record-number (str (str/upper-case jurisdiction) "-PRG-" (zero-pad sequence 6))]
+  (let [record-number (str (str/upper jurisdiction) "-PRG-" (zero-pad sequence 6))]
     {"record" {"record_id" record-number "kind" "progress-record-draft"
                "project_id" project-id "jurisdiction" jurisdiction
                "milestone" milestone "immutable" true}
@@ -59,7 +59,7 @@
     (throw (ex-info "crew-dispatch: sequence must be >= 0" {})))
   (when-not (and crew-type (not= crew-type ""))
     (throw (ex-info "crew-dispatch: crew_type required" {})))
-  (let [dispatch-number (str (str/upper-case jurisdiction) "-DSP-" (zero-pad sequence 6))]
+  (let [dispatch-number (str (str/upper jurisdiction) "-DSP-" (zero-pad sequence 6))]
     {"record" {"record_id" dispatch-number "kind" "crew-dispatch-proposal-draft"
                "project_id" project-id "jurisdiction" jurisdiction
                "crew_type" crew-type "immutable" true}
@@ -81,7 +81,7 @@
     (throw (ex-info "safety-hazard-flag: hazard_type required" {})))
   (when-not (and description (not= description ""))
     (throw (ex-info "safety-hazard-flag: description required" {})))
-  (let [flag-number (str (str/upper-case jurisdiction) "-HAZ-" (zero-pad sequence 6))]
+  (let [flag-number (str (str/upper jurisdiction) "-HAZ-" (zero-pad sequence 6))]
     {"record" {"record_id" flag-number "kind" "safety-hazard-flag-draft"
                "project_id" project-id "jurisdiction" jurisdiction
                "hazard_type" hazard-type "description" description
@@ -101,7 +101,7 @@
     (throw (ex-info "inspection-review-request: sequence must be >= 0" {})))
   (when-not (and inspection-scope (not= inspection-scope ""))
     (throw (ex-info "inspection-review-request: inspection_scope required" {})))
-  (let [request-number (str (str/upper-case jurisdiction) "-INS-" (zero-pad sequence 6))]
+  (let [request-number (str (str/upper jurisdiction) "-INS-" (zero-pad sequence 6))]
     {"record" {"record_id" request-number "kind" "inspection-review-request-draft"
                "project_id" project-id "jurisdiction" jurisdiction
                "inspection_scope" inspection-scope "requires_human_sign_off" true

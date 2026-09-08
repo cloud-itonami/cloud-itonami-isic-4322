@@ -1,5 +1,5 @@
 (ns plumbing.facts-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.lang.text] [clojure.test :refer [deftest is]]
             [plumbing.facts :as facts]))
 
 (deftest spec-basis-test
@@ -24,5 +24,5 @@
 (deftest inspection-checklist-test
   (let [checklist (facts/inspection-checklist "JPN")]
     (is (seq checklist))
-    (is (some #(clojure.string/includes? % "pressure") checklist)))
+    (is (some #(kotoba.lang.text/includes? % "pressure") checklist)))
   (is (empty? (facts/inspection-checklist "ATL"))))
