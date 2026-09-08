@@ -59,7 +59,7 @@
   Usage: `clojure -M:dev:render-html [out-file]`
   (default `docs/samples/operator-console.html`)."
   (:require [jp-go-dds.skin]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [plumbing.store :as store]
             [plumbing.operation :as op]
             [plumbing.governor :as governor]

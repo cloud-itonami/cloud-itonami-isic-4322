@@ -8,7 +8,7 @@
   This namespace sends notifications; it does NOT decide whether to send one
   -- that is `plumbing.governor` and `plumbing.phase`. The notifier is
   injected (protocol swap), not wired."
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 (defprotocol Notifier
   (-send-mail! [n msg] "msg: {:to :subject :body} -> {:status :channel :to ..}")
