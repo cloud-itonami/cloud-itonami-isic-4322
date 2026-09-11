@@ -25,9 +25,9 @@
     2. `registry.cljc`'s `register-crew-dispatch` referenced the unbound
        symbol `project_id` (underscore) instead of the `project-id`
        parameter -- namespace failed to compile.
-    3. `test/plumbing/facts_test.clj` had a bare `%` reader-macro symbol
+    3. `test/plumbing/facts_test.cljk` had a bare `%` reader-macro symbol
        used outside any `#(...)` form -- syntax error.
-    4. `test/plumbing/registry_test.clj` used `#?(:clj .. :cljs ..)`
+    4. `test/plumbing/registry_test.cljk` used `#?(:clj .. :cljs ..)`
        reader conditionals in a plain `.clj` file, where they are not
        legal syntax (only `.cljc`).
     5. `phase.cljc`'s `verdict->disposition` checked a `:hard?` key that
