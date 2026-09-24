@@ -1,0 +1,31 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:dev:physics` runs it.
+;;
+;; README "Robotics premise": robots install pipe and duct, make fittings
+;; and inspect plumbing, heating and air-conditioning installations (ISIC
+;; 4322). The physical work: commissioning a hydronic heating loop against
+;; the circulator pump, and draining an old hot-water cylinder before it is
+;; replaced.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isic-4322"
+ :cases
+ [{:id :commission-heating-loop
+   :kind :pipe-flow
+   :procedure "commissioning robot runs the circulator of a new hydronic heating loop (60 m of 28 mm copper, 60 C water, closed loop) and checks the loop's friction loss against the pump's head"
+   :params {:diameter-m 0.026 :length-m 60.0 :roughness-m 1.5e-6 :density-kg-m3 983.0
+            :viscosity-pa-s 4.7e-4 :pump-efficiency 0.35 :elevation-m 0.0}
+   :sweep {:param :q-m3s :values [0.0002 0.0003 0.0004 0.0006 0.0008]}
+   :quantity :pressure-drop-pa
+   :limit {:max 40000.0 :basis "estimate: usable head (~4 m) of a domestic wet-rotor circulator at its duty point; fittings and emitters are not modelled, so the straight-pipe loss is a lower bound"}
+   :boundary {:lo 0.0001 :hi 0.002}}
+  {:id :drain-hot-water-cylinder
+   :kind :tank-drain
+   :procedure "before replacing an old hot-water cylinder (0.5 m diameter, 1.5 m of water), the robot opens the drain cock and empties it to 0.05 m"
+   :params {:tank-area-m2 0.196 :h0-m 1.5 :h-target-m 0.05 :cd 0.62 :dt-s 0.5 :max-time-s 36000.0}
+   :sweep {:param :orifice-area-m2 :values [7.85e-5 1.13e-4 1.77e-4 3.14e-4 4.91e-4]}
+   :quantity :time-to-target-s
+   :limit {:max 900.0 :basis "estimate: 15 minutes allotted to draining in a half-day cylinder swap"}
+   :boundary {:lo 3.0e-5 :hi 1.0e-3}}]}
