@@ -139,8 +139,3 @@
   for dev/tests/demo. In production this calls a real LLM."
   []
   (->MockAdvisor))
-
-(defn -advise
-  "Invoke the advisor protocol on a request."
-  [advisor st req]
-  (-advise advisor st req))
