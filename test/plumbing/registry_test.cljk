@@ -1,5 +1,5 @@
 (ns plumbing.registry-test
-  (:require [kotoba.lang.text] [clojure.test :refer [deftest is]]
+  (:require [kotoba.lang.text] [kotoba.test :refer [deftest is]]
             [plumbing.registry :as registry]))
 
 (deftest register-progress-record-test

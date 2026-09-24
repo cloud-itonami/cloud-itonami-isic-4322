@@ -1,5 +1,5 @@
 (ns plumbing.phase-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [plumbing.phase :as phase]))
 
 (deftest phase-0-read-only-test

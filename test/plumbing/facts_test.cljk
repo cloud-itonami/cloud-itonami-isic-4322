@@ -1,5 +1,5 @@
 (ns plumbing.facts-test
-  (:require [kotoba.lang.text] [clojure.test :refer [deftest is]]
+  (:require [kotoba.lang.text] [kotoba.test :refer [deftest is]]
             [plumbing.facts :as facts]))
 
 (deftest spec-basis-test

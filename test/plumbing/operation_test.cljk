@@ -11,7 +11,7 @@
   in `plumbing.operation` never actually calling `store/commit-record!`
   (so no op's effect ever reached the store's `:projects`/`:progress`/
   `:hazards`/etc, only the audit ledger)."
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [plumbing.store :as store]
             [plumbing.operation :as op]
             [langgraph.graph :as g]))
