@@ -1,5 +1,5 @@
 (ns plumbing.notify-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [plumbing.notify :as notify]))
 
 (deftest mock-notifier-test

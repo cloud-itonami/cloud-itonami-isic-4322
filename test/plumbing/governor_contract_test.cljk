@@ -1,5 +1,5 @@
 (ns plumbing.governor-contract-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [plumbing.governor :as governor]
             [plumbing.store :as store]))
 
