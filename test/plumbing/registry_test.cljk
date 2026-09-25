@@ -1,5 +1,5 @@
 (ns plumbing.registry-test
-  (:require [kotoba.lang.text] [kotoba.test :refer [deftest is]]
+  (:require [kotoba.lang.error :as kerror] [kotoba.lang.text] [kotoba.test :refer [deftest is]]
             [plumbing.registry :as registry]))
 
 (deftest register-progress-record-test
@@ -10,11 +10,11 @@
     (is (= "progress-record-draft" (get-in result ["record" "kind"])))))
 
 (deftest register-progress-record-validation-test
-  (is (thrown? clojure.lang.ExceptionInfo
+  (is (thrown? kerror/ExceptionInfo
         (registry/register-progress-record "" "JPN" 0 "test")))
-  (is (thrown? clojure.lang.ExceptionInfo
+  (is (thrown? kerror/ExceptionInfo
         (registry/register-progress-record "proj-1" "" 0 "test")))
-  (is (thrown? clojure.lang.ExceptionInfo
+  (is (thrown? kerror/ExceptionInfo
         (registry/register-progress-record "proj-1" "JPN" -1 "test"))))
 
 (deftest register-crew-dispatch-test
