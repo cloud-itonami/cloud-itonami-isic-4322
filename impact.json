@@ -1,0 +1,23 @@
+{
+  "schema": "itonami.necessity-impact.v1",
+  "necessity_role": "housing-construction",
+  "unit": "JPY per construction worker-day (labour cost input, national all-trades weighted average of the public-works design labour rate)",
+  "baseline": {
+    "cost": 25834,
+    "source": "公共工事設計労務単価 令和8年3月適用 全国全職種加重平均値 25,834円, https://www.mlit.go.jp/report/press/content/001981942.pdf (2026-02-17)",
+    "as_of": "2026-10-02"
+  },
+  "with_bot": {
+    "cost": null,
+    "source": null,
+    "as_of": null,
+    "n_events": 0
+  },
+  "adopters": {
+    "external_tenants": 0,
+    "source": null
+  },
+  "repo": "cloud-itonami-isic-4322",
+  "isic": "4322",
+  "notes": "baseline: a LABOUR INPUT rate, not a price of a building service; excludes employer-borne overhead per the same source. delta vs this = labour-cost reduction per equivalent worker-day. with_bot must come from costs of work this repo's actor actually processed (n_events >= 30); never simulated."
+}
