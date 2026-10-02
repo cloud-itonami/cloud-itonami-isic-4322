@@ -43,6 +43,28 @@
       "skill": null,
       "skills": [],
       "workdir": null
+    },
+    {
+      "base_url": null,
+      "context_from": null,
+      "deliver": "local",
+      "enabled": true,
+      "enabled_toolsets": null,
+      "id": "f4d6bef0a097",
+      "model": null,
+      "name": "physai-isic-4322-necessity-impact",
+      "no_agent": true,
+      "prompt": "",
+      "provider": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "17 21 * * *",
+        "display": "17 21 * * *"
+      },
+      "script": "necessity_impact.sh",
+      "skill": null,
+      "skills": [],
+      "workdir": null
     }
   ]
 }
